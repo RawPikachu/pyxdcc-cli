@@ -1,9 +1,9 @@
 from xdcc_dl.pack_search import SearchEngines
-from xdcc_dl.xdcc import XDCCPack, XDCCClient
+from xdcc_dl.xdcc import XDCCClient
 from pyfzf.pyfzf import FzfPrompt
 from tempfile import TemporaryDirectory
 from multiprocessing import Process
-import contextlib
+import shutil
 import time
 import os
 
@@ -41,12 +41,14 @@ def download_video(search_results, tmp_dir):
 
 
 def main():
-    with TemporaryDirectory() as tmp_dir:
+    with TemporaryDirectory(None, "xdcc-cli-") as tmp_dir:
 
         def play_video(selected_result):
             while selected_result.filename not in os.listdir(tmp_dir):
                 time.sleep(0.25)
-            os.system(f"mpv --no-terminal '{tmp_dir}/{selected_result.filename}' &")
+
+            executable_path = shutil.which("mpv")
+            os.system(f"{executable_path} --no-terminal '{os.path.join(tmp_dir, selected_result.filename)}' &")
 
         search_term = input("Enter search term: ")
         search_results = SearchEngines.NIBL.value.search(search_term)
@@ -54,11 +56,11 @@ def main():
         choice = ["Placeholder"]
 
         while True:
-            if choice[0] == "Choose again":
+            if choice[0] == "Search again":
                 search_term = input("Enter search term: ")
                 search_results = SearchEngines.NIBL.value.search(search_term)
 
-            if choice[0] == "Search again" or choice[0] == "Choose again":
+            if choice[0] == "Choose again" or choice[0] == "Search again":
                 selected_result, download = download_video(search_results, tmp_dir)
 
             play = Process(target=play_video, args=(selected_result,))
