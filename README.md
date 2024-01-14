@@ -1,7 +1,7 @@
 pyxdcc-cli
 =====
 
-##### A cli interface for watching anime from xdcc inspired by [ani-cli](https://github.com/pystardust/ani-cli).
+#### A cli interface for watching anime from xdcc inspired by [ani-cli](https://github.com/pystardust/ani-cli).
 
 Requirements
 ------------
